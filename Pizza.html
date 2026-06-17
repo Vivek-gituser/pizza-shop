@@ -1,1 +1,312 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bite & Sip Cafe</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            900: '#881337',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Card hover */
+        .food-card {
+            transition: all 0.3s ease;
+        }
+        .food-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hide scrollbar for category list */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-x-hidden">
+
+    <!-- ===== NAVIGATION ===== -->
+    <nav class="bg-white shadow-sm sticky top-0 z-40 w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="resetView()">
+                    <i class="fa-solid fa-mug-hot text-brand-500 text-2xl mr-2"></i>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">Bite & Sip</span>
+                </div>
+
+                <!-- Search (Desktop) -->
+                <div class="hidden md:block flex-1 max-w-md mx-8">
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-search text-gray-400 group-focus-within:text-brand-500 transition-colors"></i>
+                        </div>
+                        <input type="text" id="desktopSearch" placeholder="Search for burgers, pizza, drinks..."
+                        class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 sm:text-sm transition-all shadow-sm"
+                        onkeyup="handleSearch(this.value)" />
+                    </div>
+                </div>
+
+                <!-- Icons -->
+                <div class="flex items-center space-x-4 sm:space-x-6">
+                    <button onclick="toggleModal('cart-modal')" class="text-gray-500 hover:text-brand-600 transition-colors relative p-2 rounded-full hover:bg-gray-100">
+                        <i class="fa-solid fa-shopping-cart text-xl"></i>
+                        <span id="cart-badge" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-brand-500 rounded-full hidden">0</span>
+                    </button>
+                    <button onclick="toggleModal('account-modal')" class="text-gray-500 hover:text-brand-600 transition-colors p-2 rounded-full hover:bg-gray-100">
+                        <i class="fa-regular fa-user text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search (Mobile) -->
+        <div class="md:hidden px-4 pb-3">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-search text-gray-400"></i>
+                </div>
+                <input type="text" id="mobileSearch" placeholder="Search menu..."
+                class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 sm:text-sm"
+                onkeyup="handleSearch(this.value)" />
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Hero -->
+        <section id="hero-section" class="bg-gradient-to-r from-brand-500 to-brand-600 rounded-2xl shadow-lg p-6 sm:p-10 mb-10 text-white relative overflow-hidden">
+            <div class="relative z-10 md:w-2/3">
+                <h1 class="text-3xl sm:text-4xl font-bold mb-3">Welcome back! Hungry?</h1>
+                <p class="text-brand-100 text-lg mb-6">Discover our newest additions and all-time favorites. Fast delivery, fresh taste.</p>
+                <button onclick="document.getElementById('full-menu-section').scrollIntoView({behavior:'smooth'})" class="bg-white text-brand-600 font-semibold py-2 px-6 rounded-full hover:bg-brand-50 transition-colors shadow-md">
+                    Order Now
+                </button>
+            </div>
+            <div class="absolute right-0 top-0 h-full w-1/3 opacity-20 pointer-events-none hidden md:block">
+                <i class="fa-solid fa-pizza-slice text-[15rem] absolute -right-10 -top-10 transform rotate-12"></i>
+            </div>
+        </section>
+
+        <!-- Bestsellers -->
+        <section id="bestsellers-section" class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                    <i class="fa-solid fa-fire text-orange-500 mr-2"></i> Bestsellers
+                </h2>
+            </div>
+            <div id="bestsellers-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- injected by JS -->
+            </div>
+        </section>
+
+        <!-- Search Results Header (hidden by default) -->
+        <div id="search-results-header" class="hidden mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 flex items-center justify-between">
+                <span>Search Results <span id="search-query-display" class="text-brand-500 font-normal"></span></span>
+                <button onclick="clearSearch()" class="text-sm text-gray-500 hover:text-brand-500 border border-gray-300 rounded-full px-3 py-1">Clear</button>
+            </h2>
+        </div>
+
+        <!-- Category Navigation -->
+        <div id="categories-section" class="mb-6 flex space-x-2 overflow-x-auto no-scrollbar pb-2">
+            <button class="category-btn active bg-brand-500 text-white px-5 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-colors shadow-sm" onclick="filterCategory('All', this)">All Items</button>
+            <button class="category-btn bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 px-5 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-colors" onclick="filterCategory('Burgers', this)">🍔 Burgers</button>
+            <button class="category-btn bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 px-5 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-colors" onclick="filterCategory('Pizzas', this)">🍕 Pizzas</button>
+            <button class="category-btn bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 px-5 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-colors" onclick="filterCategory('Drinks', this)">🥤 Cold Drinks</button>
+            <button class="category-btn bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 px-5 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-colors" onclick="filterCategory('Desserts', this)">🍰 Desserts</button>
+        </div>
+
+        <!-- Full Menu -->
+        <section id="full-menu-section">
+            <h2 id="menu-title" class="text-2xl font-bold text-gray-900 mb-6">Full Menu</h2>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden flex flex-col items-center justify-center py-12 text-center">
+                <i class="fa-solid fa-ghost text-5xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-medium text-gray-600">No items found</h3>
+                <p class="text-gray-500 mt-2">Try searching for something else like "Burger" or "Cola".</p>
+            </div>
+
+            <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- injected by JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== CART MODAL ===== -->
+    <div id="cart-modal" class="fixed inset-0 z-50 hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity backdrop-blur-sm" onclick="toggleModal('cart-modal')"></div>
+        <div class="fixed inset-y-0 right-0 max-w-full flex">
+            <div class="w-screen max-w-md transform transition ease-in-out duration-300 translate-x-full" id="cart-panel">
+                <div class="h-full flex flex-col bg-white shadow-xl">
+                    <div class="flex-1 py-6 overflow-y-auto px-4 sm:px-6">
+                        <div class="flex items-start justify-between">
+                            <h2 class="text-lg font-bold text-gray-900">Shopping Cart</h2>
+                            <button class="-m-2 p-2 text-gray-400 hover:text-gray-500" onclick="toggleModal('cart-modal')">
+                                <i class="fa-solid fa-xmark text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="mt-8">
+                            <div class="flow-root">
+                                <ul id="cart-items-list" role="list" class="-my-6 divide-y divide-gray-200">
+                                    <!-- injected -->
+                                </ul>
+                                <div id="empty-cart-msg" class="text-center py-10">
+                                    <i class="fa-solid fa-basket-shopping text-4xl text-gray-300 mb-3"></i>
+                                    <p class="text-gray-500">Your cart is empty.</p>
+                                    <p class="text-sm text-gray-400 mt-1">Add some delicious items!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-200 py-6 px-4 sm:px-6 bg-gray-50">
+                        <div class="flex justify-between text-base font-medium text-gray-900 mb-4">
+                            <p>Subtotal</p>
+                            <p id="cart-total">$0.00</p>
+                        </div>
+                        <button onclick="checkout()" class="w-full flex justify-center items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors">
+                            Checkout
+                        </button>
+                        <div class="mt-6 flex justify-center text-sm text-center text-gray-500">
+                            <p>or <button type="button" class="text-brand-600 font-medium hover:text-brand-500" onclick="toggleModal('cart-modal')">Continue Shopping <span aria-hidden="true">&rarr;</span></button></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ACCOUNT MODAL ===== -->
+    <div id="account-modal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity backdrop-blur-sm" onclick="toggleModal('account-modal')"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full" id="account-panel">
+                <div class="absolute top-0 right-0 pt-4 pr-4">
+                    <button class="bg-white rounded-md text-gray-400 hover:text-gray-500" onclick="toggleModal('account-modal')">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-xl leading-6 font-bold text-gray-900 mb-6 text-center" id="modal-title">My Account</h3>
+                            <div class="flex border-b border-gray-200 mb-6">
+                                <button class="flex-1 py-2 font-medium text-brand-600 border-b-2 border-brand-600">Sign In</button>
+                                <button class="flex-1 py-2 font-medium text-gray-500 hover:text-gray-700">Create Account</button>
+                            </div>
+                            <form class="space-y-4" onsubmit="event.preventDefault(); simulateLogin();">
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                                    <input id="email" type="email" required placeholder="you@example.com" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" />
+                                </div>
+                                <div>
+                                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                                    <input id="password" type="password" required placeholder="••••••••" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm" />
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <input id="remember-me" type="checkbox" class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded" />
+                                        <label for="remember-me" class="ml-2 block text-sm text-gray-900">Remember me</label>
+                                    </div>
+                                    <a href="#" class="text-sm font-medium text-brand-600 hover:text-brand-500">Forgot password?</a>
+                                </div>
+                                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                                    Sign in
+                                </button>
+                            </form>
+                            <!-- Logged-in view (hidden initially) -->
+                            <div id="logged-in-view" class="hidden text-center py-6">
+                                <div class="mx-auto h-16 w-16 bg-brand-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-user text-2xl text-brand-600"></i>
+                                </div>
+                                <h4 class="text-lg font-medium text-gray-900">Welcome back, User!</h4>
+                                <p class="text-sm text-gray-500 mt-1">user@example.com</p>
+                                <div class="mt-6 space-y-2">
+                                    <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"><i class="fa-solid fa-clock-rotate-left w-5 mr-2"></i> Order History</button>
+                                    <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"><i class="fa-solid fa-map-location-dot w-5 mr-2"></i> Saved Addresses</button>
+                                </div>
+                                <button onclick="simulateLogout()" class="mt-6 w-full flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                    Sign out
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- ===== APPLICATION LOGIC ===== -->
+    <script>
+        // ---------- DATA ----------
+        const menuItems = [
+            { id: 1, name: "Classic Cheeseburger", category: "Burgers", price: 8.99, isPopular: true,
+                desc: "Juicy beef patty with melted cheddar, lettuce, and tomato.",
+                image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80" },
+            { id: 2, name: "Double Smash Burger", category: "Burgers", price: 11.99, isPopular: false,
+                desc: "Two smashed patties, double cheese, caramelized onions.",
+                image: "https://images.unsplash.com/photo-1594212202999-92e850fa91fb?auto=format&fit=crop&w=500&q=80" },
+            { id: 3, name: "Spicy Chicken Sandwich", category: "Burgers", price: 9.49, isPopular: true,
+                desc: "Crispy fried chicken breast with spicy mayo and pickles.",
+                image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=500&q=80" },
+            { id: 4, name: "Margherita Pizza", category: "Pizzas", price: 12.00, isPopular: true,
+                desc: "Classic tomato sauce, fresh mozzarella, and basil.",
+                image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=500&q=80" },
+            { id: 5, name: "Pepperoni Feast", category: "Pizzas", price: 14.50, isPopular: true,
+                desc: "Loaded with premium pepperoni and extra cheese.",
+                image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=500&q=80" },
+            { id: 6, name: "Veggie Supreme", category: "Pizzas", price: 13.00, isPopular: false,
+                desc: "Bell peppers, onions, mus
